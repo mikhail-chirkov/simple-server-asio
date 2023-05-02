@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message ClientUpdate {
+    int32 id = 1;
+}

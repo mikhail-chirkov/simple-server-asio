@@ -1,0 +1,14 @@
+[requires]
+asio/1.24.0
+gtest/1.12.1
+protobuf/3.21.9
+
+[tool_requires]
+cmake/3.25.2
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[layout]
+cmake_layout
