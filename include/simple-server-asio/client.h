@@ -19,7 +19,9 @@ public:
     Client()
     {
         ctx_thread_ = std::thread{[&]()
-                                  { ctx_.run(); }};
+                                  { 
+                                    auto wg = asio::make_work_guard(ctx_);
+                                    ctx_.run(); }};
     };
 
     void connect(const std::string &ip, asio::ip::port_type port)
@@ -29,6 +31,10 @@ public:
         socket.connect(ep);
         std::cout << "connected to the server on port: " << port << "\n";
         participant_ = std::make_unique<participant_type>(ctx_, std::move(socket));
+        // wait for id from the server
+        auto msg = participant_->wait_and_read_from_input_queue();
+        id_ = msg.id();
+        std::cout << "Assigned client id is " << id_ << "\n";
     }
 
     void disconnect()
@@ -49,9 +55,8 @@ public:
 private:
     asio::io_context ctx_;
     std::thread ctx_thread_;
+
     std::unique_ptr<participant_type> participant_;
     asio::ip::port_type port_;
     uint32_t id_;
-    std::atomic_bool is_running_;
-    std::mutex mtx_;
 };
